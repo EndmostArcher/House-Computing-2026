@@ -1,2 +1,97 @@
-Console.WriteLine("Hello World!");
+
+Dictionary<string, int> playerAttributes = new Dictionary<string, int>
+{
+    {"Health", 75},
+    {"Reputation", 50},
+    {"Money", 100}
+};
+
+Dictionary<string, Dictionary<string, string[]>> zone1Rooms = new Dictionary<string, Dictionary<string, string[]>>
+{
+    ["Town Hall"] =
+    {
+        {"Items", []},
+        {"NPC", ["Marcus"]},
+        {"Attributes", ["ContainsNPC", "ContainsItems", "ContainsInteractables"]}
+    },
+};
+
+Dictionary<string, Dictionary<string, int>> characters = new Dictionary<string, Dictionary<string, int>>
+{
+    ["Marcus"] =
+    {
+        {"Health", 100},
+        {"Reputation", 0},
+        {"Money", 1000},
+        {"Gullible", 50},
+        {"Met Before", 0},
+        {"Donation", 150}
+    }
+};
+
+Dictionary<string, Dictionary<int, string>> characterVoicelines = new Dictionary<string, Dictionary<int, string>>
+{
+    ["Marcus"] =
+    {
+        {0, "Welcome to the town of Palark! Here's a little something to get you started. [ You recieved £150] \nMy name is Marcus Smith-Hart. We need your help! Our king has been taken hostage, and we need him back. Will you help us? "},
+        {1, "I really hope you can find him, he's the saviour of our town and the heart of the country."},
+        {2, "A:  Yes, of course I'll help."},
+        {3, "B:  No, I don't think I can do that." },
+        {22, "GainBigReputation" },
+        {23, "LoseAllHealth"}
+    }
+};
+
+string playerPosition = "Town Hall";
+bool positionContainsNPC = false;
+bool positionContainsItems = false;
+bool positionContainsInteractables = false;
+
+void UpdateLocationConditions(string room)
+{
+    if (zone1Rooms[room].ContainsKey("NPC"))
+    {
+        positionContainsNPC = true;
+    }
+    if (zone1Rooms[room].ContainsKey("Items"))
+    {
+        positionContainsItems = true;
+    }
+    if (zone1Rooms[room].ContainsKey("Interactables"))
+    {
+        positionContainsInteractables = true;
+    }
+}
+void PlayerInteraction()
+{
+
+}
+
+void MovePlayer()
+{
+    string playerMoveRequest = "";
+    while (playerMoveRequest == "")
+    {
+        Console.WriteLine("What room would you like to move to? (Make sure to type with correct grammar)");
+        playerMoveRequest = Console.ReadLine();
+        if (playerMoveRequest == "")
+        {
+            Console.WriteLine("You need to enter the name of a room!");
+        }
+        else if (!zone1Rooms.ContainsKey(playerMoveRequest))
+        {
+            Console.WriteLine("That's not an existing room! Make sure you spell the room's name correctly.");
+        }
+        else
+        {
+            playerPosition = playerMoveRequest;
+            Console.WriteLine("You have entered the ", playerPosition);
+        }
+    }
+}
+
+while (playerAttributes["Health"] > 0)
+{
+
+}
 
