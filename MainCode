@@ -6,13 +6,19 @@ Dictionary<string, int> playerAttributes = new Dictionary<string, int>
     {"Money", 100}
 };
 
+string[] playerInventory = new string[]
+{
+    "Red Key",
+};
+
 Dictionary<string, Dictionary<string, string[]>> zone1Rooms = new Dictionary<string, Dictionary<string, string[]>>
 {
     ["Town Hall"] =
     {
         {"Items", []},
         {"NPC", ["Marcus"]},
-        {"Attributes", ["ContainsNPC", "ContainsItems", "ContainsInteractables"]}
+        {"Attributes", ["ContainsNPC", "ContainsItems", "ContainsInteractables"]},
+        {"Entry Items", ["Red Key"]}
     },
 };
 
@@ -35,9 +41,9 @@ Dictionary<string, Dictionary<int, string>> characterVoicelines = new Dictionary
     {
         {0, "Welcome to the town of Palark! Here's a little something to get you started. [ You recieved £150] \nMy name is Marcus Smith-Hart. We need your help! Our king has been taken hostage, and we need him back. Will you help us? "},
         {1, "I really hope you can find him, he's the saviour of our town and the heart of the country."},
-        {2, "A:  Yes, of course I'll help."},
-        {3, "B:  No, I don't think I can do that." },
-        {22, "GainBigReputation" },
+        {2, "1:  Yes, of course I'll help."},
+        {3, "2:  No, I don't think I can do that." },
+        {22, "GainBigReputation"},
         {23, "LoseAllHealth"}
     }
 };
@@ -46,6 +52,7 @@ string playerPosition = "Town Hall";
 bool positionContainsNPC = false;
 bool positionContainsItems = false;
 bool positionContainsInteractables = false;
+bool positionContainsEntryItem = false;
 
 void UpdateLocationConditions(string room)
 {
@@ -61,10 +68,89 @@ void UpdateLocationConditions(string room)
     {
         positionContainsInteractables = true;
     }
+    if (zone1Rooms[room].ContainsKey("Entry Items"))
+    {
+        positionContainsEntryItem = true;
+    }
 }
-void PlayerInteraction()
+void PlayerInteraction(string characterName)
 {
+    Console.WriteLine("How would you like to interact with this character:");
+    Console.WriteLine("[Enter the number of the action that you would like to take]  \n1: Talk to character  \n2: Pickpocket character  \n3: Fight character");
+    if (zone1Rooms["NPC"].ContainsKey("Items"))
+    {
+        Console.WriteLine("4: Trade with character");
+    }
+    string interactionSelection = Console.ReadLine();
+    while (interactionSelection != "1" &&
+        interactionSelection != "2" &&
+        interactionSelection != "3"&&
+        interactionSelection != "4")
+    {
+        Console.WriteLine("You need to enter a valid selection! Try again:");
+        interactionSelection = Console.ReadLine();
+    }
+    if (interactionSelection == "1")
+    {
+        Dictionary<string, int> characterAttributes = new Dictionary<string, int>();
+        Dictionary<int, string> characterVLs = new Dictionary<int, string>();
+        characterVLs = characterVoicelines[characterName];
+        characterAttributes = characters[characterName];
+        int metBefore = characterAttributes["Met Before"];
+        string voiceLine = "";
+        voiceLine = characterVLs[metBefore];
+        Console.WriteLine(voiceLine);
+    }
+}
 
+void CheckInventory()
+{
+    Console.WriteLine("In your inventory you have:");
+    foreach (string s in playerInventory)
+    {
+        Console.WriteLine(s);
+    }
+}
+
+string[] RoomInteractions()
+{
+    string[] interactionList = new string[3];
+    Dictionary<string, string[]> roomStuff = new Dictionary<string, string[]>();
+    foreach (KeyValuePair<string, string[]> k in zone1Rooms[playerPosition])
+    {
+        roomStuff.Add(k.Key, k.Value);
+    }
+    int actionIndex = 1;
+    string[] neededValue = new string[1];
+    string neededString = "";
+    if (positionContainsNPC)
+    {
+        foreach(string s in roomStuff["NPC"])
+        {
+            neededValue.Append(s);
+        }
+        neededString = neededValue[0];
+        interactionList[actionIndex - 1] = ($"{actionIndex}  Talk to Character: {neededValue}");
+        actionIndex++;
+    }
+    if (positionContainsItems)
+    {
+        interactionList[actionIndex - 1] = ($"{actionIndex}  Trade");
+        actionIndex++;
+        interactionList[actionIndex - 1] = ($"{actionIndex}  Pickpocket");
+        actionIndex++;
+    }
+    if (positionContainsInteractables)
+    {
+        neededValue = new string[1];
+        foreach (string s in roomStuff["Interactable"])
+        {
+            neededValue.Append(s);
+        }
+        neededString = neededValue[0];
+        interactionList[actionIndex - 1] = ($"{actionIndex}  Interact with: {neededString}");
+    }
+    return interactionList;
 }
 
 void MovePlayer()
@@ -84,14 +170,24 @@ void MovePlayer()
         }
         else
         {
-            playerPosition = playerMoveRequest;
-            Console.WriteLine("You have entered the ", playerPosition);
+            UpdateLocationConditions(playerPosition);
+            if (positionContainsEntryItem)
+            {
+
+            }
+            else
+            {
+                playerPosition = playerMoveRequest;
+                Console.WriteLine("You have entered the ", playerPosition);
+            }
         }
     }
 }
 
 while (playerAttributes["Health"] > 0)
 {
+    if (playerPosition == "Dungeon")
+    {
 
+    }
 }
-
